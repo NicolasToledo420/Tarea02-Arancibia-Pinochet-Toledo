@@ -18,6 +18,8 @@
  */
 
 #include "YASL.h"      // For Socket, ServerSocket, and SocketException
+#include "json.hpp"	//Libreria Json	
+#include "<fstream> // Manejo de archivos
 #include "checkArgs.h"
 #include <iostream>    // For cerr and cout
 #include <cstdlib>     // For atoi()
@@ -38,15 +40,30 @@ void HandleTCPClient(TCPSocket *sock) {
 		std::cerr << "Unable to get foreign port" << std::endl;
 	}
 	std::cout << std::endl;
-
-	// Send received string and receive again until the end of transmission
+//-------CODIGO ORIGINAL DEL STRING QUE ERA ENVIADO DEL SERVIDOR ECHO--------
+	/*// Send received string and receive again until the end of transmission
 	char echoBuffer[RCVBUFSIZE];
 	uint32_t recvMsgSize;
 	while ((recvMsgSize = sock->recv(echoBuffer, RCVBUFSIZE)) > 0) { // Zero means
 	                                                 // end of transmission
 		// Echo message back to client
 		sock->send(echoBuffer, recvMsgSize);
-	}
+		}*/
+//----------------------------------------------------------------------------------------------------	
+	
+	
+	sock->send("HTTP/1.1 200 OK\r\n", );//HTTP indicado en la especificacion de la tarea
+	
+	//------------Leer Archivo HTML----------------------
+	std::string leerlinea;std::string structhtml="";std::ifstream data("1.html");//Tola aqui se coloca la pagina1 data(" ")
+	//std::string leer: es una variable en la cual se usa para obtener una linea de un archivo
+	//std::string structhtml: es la variable en la cual se guardara la estructura del html
+	//std::string ifstream: es la variable que me permite abrir el archivo variable("pagina html");
+	/*  En este espacio se deberia crear el code en el cual guardamos la estrucura html, debemos guardar el html linea por linea
+	abriendolo con ifstream data("Ubicacion del html"), y al revisar linea por linea el codigo, tendremos la variable leerlinea en la cual
+	guardaremos linea por linea en la variable structhtml
+	*/
+	
 	delete sock;
 }
 
