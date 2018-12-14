@@ -11,7 +11,7 @@ Nicolás Ignacio Toledo Toledo - nicolas.toledo@alumnos.uv.cl
 	cd src
 	make clean
 	make
-	./echoServer 8081
+	./echoServer -p 8081
 	***LUEGO DE CONSOLA, EN NAVEGADOR WEB: ***
 	127.0.0.200:8081/1.html
 	127.0.0.200:8081/2.html
