@@ -23,47 +23,101 @@
 #include "checkArgs.h"
 #include <iostream>    // For cerr and cout
 #include <cstdlib>     // For atoi()
+#include <string>
 
-const uint32_t RCVBUFSIZE = 32;    // Size of receive buffer
-
+const uint32_t RCVBUFSIZE = 512;    // Size of receive buffer
 // TCP client handling function
-void HandleTCPClient(TCPSocket *sock) {
-	std::cout << "Handling client ";
+void HandleTCPClient(TCPSocket *sock) {	
+	//SE OBTIENE LA IP Y EL HOST DEL CLIENTE
 	try {
+		std::cout << "El cliente con la IP: ";
 		std::cout << sock->getForeignAddress() << ":";
 	} catch (SocketException e) {
-		std::cerr << "Unable to get foreign address" << std::endl;
+		std::cerr << "No se puede obtener la IP" << std::endl;
 	}
 	try {
 		std::cout << sock->getForeignPort();
+		std::cout << " esta manejando el servidor";
 	} catch (SocketException e) {
-		std::cerr << "Unable to get foreign port" << std::endl;
+		std::cerr << "No se puede obtener el puerto" << std::endl;
 	}
 	std::cout << std::endl;
-//-------CODIGO ORIGINAL DEL STRING QUE ERA ENVIADO DEL SERVIDOR ECHO--------
-	/*// Send received string and receive again until the end of transmission
+	// Send received string and receive again until the end of transmission
+	//SE DEFINE EL ECHOVBUFFER CON EL LARGO DEL RCVBUFSIZE
 	char echoBuffer[RCVBUFSIZE];
 	uint32_t recvMsgSize;
-	while ((recvMsgSize = sock->recv(echoBuffer, RCVBUFSIZE)) > 0) { // Zero means
-	                                                 // end of transmission
-		// Echo message back to client
-		sock->send(echoBuffer, recvMsgSize);
-		}*/
-//----------------------------------------------------------------------------------------------------	
-	
-	
-	sock->send("HTTP/1.1 200 OK\r\n", );//HTTP indicado en la especificacion de la tarea
-	
-	//------------Leer Archivo HTML----------------------
-	std::string leerlinea;std::string structhtml="";std::ifstream data("1.html");//Tola aqui se coloca la pagina1 data(" ")
-	//std::string leer: es una variable en la cual se usa para obtener una linea de un archivo
-	//std::string structhtml: es la variable en la cual se guardara la estructura del html
-	//std::string ifstream: es la variable que me permite abrir el archivo variable("pagina html");
-	/*  En este espacio se deberia crear el code en el cual guardamos la estrucura html, debemos guardar el html linea por linea
-	abriendolo con ifstream data("Ubicacion del html"), y al revisar linea por linea el codigo, tendremos la variable leerlinea en la cual
-	guardaremos linea por linea en la variable structhtml
-	*/
-	
+	recvMsgSize = sock->recv(echoBuffer, RCVBUFSIZE);
+	std::cout << recvMsgSize + "\n";
+	//SE ENVIA A TRAVÉS DEL SOCKET EL RESPONSE AL REQUEST INICIAL
+	sock->send("HTTP/1.1 200 OK\r\n", 32);//HTTP indicado en la especificacion de la tarea
+	sock->send("Content-Type: text/html\r\n\r\n", 32);
+	//SE GENERAN LAS VARIABLES NECESARIAS PARA COMPRAR EL ECHOBUFFER CON EL NOMBRE DE LOS ARCHIVOS
+	//ADEMAS SE GENERAN VARIABLES PARA PODER LEER LINEA POR LINEA EL ARCHIVO HTML
+	std::string leerlinea;
+	std::string htmlstruct="";
+	std::string rqe(echoBuffer, 5, 6);
+	std::string a1 = "1.html";
+	std::string a2 = "2.html";
+	std::string a3 = "3.html";
+	std::ifstream arch("../www-data/1.html");//Tola aqui se coloca la pagina1 data(" ")
+	std::ifstream arch1("../www-data/2.html");
+	std::ifstream arch2("../www-data/3.html");
+	std::ifstream arch404("../www-error/404.html");
+	std::cout << rqe + "\n";
+	//SI EL SUBSTRING rqe PROVENIENTE DEL ECHOBUFFER ES IGUAL AL NOMBRE DEL ARCHIVO 1
+	//SE LEE LINEA POR LINEA EL HTML Y LO ENVIA A TRAVÉS DEL SOCKET
+	//ESTA MISMA CONDICION SE REPLICA PARA EL ARCHIVO 2, 3 Y EL ARCHIVO 404
+	//ESTE ULTIMO SOLO SE VA A EJECUTAR SI EL REQUES NO CORRESPONDE A NINGUN NUMBRE DE
+	//NINGUN ARCHIVO.
+	if(rqe == a1){
+		if (arch.is_open()){
+			while(getline(arch, leerlinea)){
+				htmlstruct = htmlstruct + leerlinea + "\n";
+			}
+			arch.close();
+			sock->send(htmlstruct.c_str(), htmlstruct.length());
+		}
+		else{
+			std::cout << "No se ha podido abrir el HTML correspondiente";
+		}
+	}
+	else if (rqe == a2){
+		if (arch1.is_open()){
+			while(getline(arch1, leerlinea)){
+				htmlstruct = htmlstruct + leerlinea + "\n";
+			}
+			arch1.close();
+			sock->send(htmlstruct.c_str(), htmlstruct.length());
+		}
+		else{
+			std::cout << "No se ha podido abrir el HTML correspondiente";
+		}
+	}
+	else if (rqe == a3){
+		if (arch2.is_open()){
+			while(getline(arch2, leerlinea)){
+				htmlstruct = htmlstruct + leerlinea + "\n";
+			}
+			arch2.close();
+			sock->send(htmlstruct.c_str(), htmlstruct.length());
+		}
+		else{
+			std::cout << "No se ha podido abrir el html correspondiente";
+		}
+	}
+	else{
+		if(arch404.is_open()){
+			while(getline(arch404, leerlinea)){
+				htmlstruct = htmlstruct + leerlinea + "\n";
+			}
+			arch404.close();
+			sock->send(htmlstruct.c_str(), htmlstruct.length());
+		}
+		
+		else{
+			std::cout << "No se ha podido abrir el html correspondiente";
+		}
+	}
 	delete sock;
 }
 
